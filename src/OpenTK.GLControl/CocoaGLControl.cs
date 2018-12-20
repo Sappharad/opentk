@@ -31,17 +31,29 @@ using OpenTK.Platform.MacOS;
 
 namespace OpenTK
 {
-    internal class CarbonGLControl : IGLControl
+    internal class CocoaGLControl : IGLControl
     {
         private GraphicsMode mode;
         private Control control;
 
-        internal CarbonGLControl(GraphicsMode mode, Control owner)
+        internal CocoaGLControl(GraphicsMode mode, Control owner)
         {
             this.mode = mode;
             this.control = owner;
-
-            WindowInfo = Utilities.CreateMacOSCarbonWindowInfo(control.Handle, false, true);
+            CocoaUserControl.CocoaUserControl cocoaView;
+            if (owner is CocoaUserControl.CocoaUserControl)
+            {
+                cocoaView = owner as CocoaUserControl.CocoaUserControl;
+            }
+            else
+            {
+                cocoaView = new CocoaUserControl.CocoaUserControl
+                {
+                    Dock = DockStyle.Fill
+                };
+                owner.Controls.Add(cocoaView);
+            }
+            WindowInfo = Utilities.CreateMacOSWindowInfo(((UserControl)owner).ParentForm.Handle, cocoaView.ViewHandle);
         }
 
         private int GetXOffset()
@@ -64,7 +76,8 @@ namespace OpenTK
         public IGraphicsContext CreateContext(int major, int minor, GraphicsContextFlags flags)
         {
             // AGL does not support OpenGL profiles
-            return new AglContext(mode, WindowInfo, GraphicsContext.CurrentContext, GetXOffset, GetYOffset);
+            //return new AglContext(mode, WindowInfo, GraphicsContext.CurrentContext, GetXOffset, GetYOffset);
+            return new GraphicsContext(mode, WindowInfo);
         }
 
         // TODO: Fix this
