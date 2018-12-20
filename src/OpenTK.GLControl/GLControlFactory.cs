@@ -53,7 +53,7 @@ namespace OpenTK
             }
             else if (Configuration.RunningOnMacOS)
             {
-                return new CarbonGLControl(mode, control);
+                return new CocoaGLControl(mode, control);
             }
             else if (Configuration.RunningOnX11)
             {

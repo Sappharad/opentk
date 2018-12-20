@@ -33,8 +33,10 @@ namespace OpenTK.Platform.Egl
 {
     internal class EglUnixContext : EglContext
     {
+#if OPENGLES
         private IntPtr ES1 = OpenTK.Platform.X11.DL.Open("libGLESv1_CM", X11.DLOpenFlags.Lazy);
         private IntPtr ES2 = OpenTK.Platform.X11.DL.Open("libGLESv2", X11.DLOpenFlags.Lazy);
+#endif
         private IntPtr GL = OpenTK.Platform.X11.DL.Open("libGL", X11.DLOpenFlags.Lazy);
 
         public EglUnixContext(GraphicsMode mode, EglWindowInfo window, IGraphicsContext sharedContext,
@@ -51,6 +53,7 @@ namespace OpenTK.Platform.Egl
 
         protected override IntPtr GetStaticAddress(IntPtr function, RenderableFlags renderable)
         {
+#if OPENGLES
             if ((renderable & (RenderableFlags.ES2 | RenderableFlags.ES3)) != 0 && ES2 != IntPtr.Zero)
             {
                 return X11.DL.Symbol(ES2, function);
@@ -60,6 +63,9 @@ namespace OpenTK.Platform.Egl
                 return X11.DL.Symbol(ES1, function);
             }
             else if ((renderable & RenderableFlags.GL) != 0 && GL != IntPtr.Zero)
+#else
+            if ((renderable & RenderableFlags.GL) != 0 && GL != IntPtr.Zero)
+#endif
             {
                 return X11.DL.Symbol(GL, function);
             }
@@ -68,6 +74,7 @@ namespace OpenTK.Platform.Egl
 
         protected override void Dispose(bool manual)
         {
+#if OPENGLES
             if (ES1 != IntPtr.Zero)
             {
                 X11.DL.Close(ES1);
@@ -76,12 +83,17 @@ namespace OpenTK.Platform.Egl
             {
                 X11.DL.Close(ES2);
             }
+#endif
             if (GL != IntPtr.Zero)
             {
                 X11.DL.Close(GL);
             }
 
+#if OPENGLES
             GL = ES1 = ES2 = IntPtr.Zero;
+#else
+            GL = IntPtr.Zero;
+#endif
 
             base.Dispose(manual);
         }
@@ -97,9 +109,11 @@ namespace OpenTK.Platform.Egl
 
             new OpenTK.Graphics.OpenGL.GL().LoadEntryPoints();
             new OpenTK.Graphics.OpenGL4.GL().LoadEntryPoints();
+#if OPENGLES
             new OpenTK.Graphics.ES11.GL().LoadEntryPoints();
             new OpenTK.Graphics.ES20.GL().LoadEntryPoints();
             new OpenTK.Graphics.ES30.GL().LoadEntryPoints();
+#endif
 
             Debug.Print("Bindings loaded in {0} ms.", time.Elapsed.TotalMilliseconds);
         }

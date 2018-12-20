@@ -13,7 +13,6 @@
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
-    <DelaySign>false</DelaySign>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>
@@ -88,14 +87,17 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Drawing">
-      <Name>System.Drawing</Name>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <Name>System.Windows.Forms</Name>
-    </Reference>
     <Reference Include="System.Xml">
       <Name>System.Xml</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>..\..\64bitCocoaWinForms\System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>..\..\64bitCocoaWinForms\System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="CocoaUserControl">
+      <HintPath>..\..\64bitCocoaWinForms\CocoaUserControl.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -129,27 +131,27 @@
     <Compile Include="X11GLControl.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CarbonGLControl.cs">
+    <Compile Include="CocoaGLControl.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Agl.cs">
-      <DependentUpon>CarbonGLControl.cs</DependentUpon>
+      <DependentUpon>CocoaGLControl.cs</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AglContext.cs">
-      <DependentUpon>CarbonGLControl.cs</DependentUpon>
+      <DependentUpon>CocoaGLControl.cs</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AglGraphicsMode.cs">
-      <DependentUpon>CarbonGLControl.cs</DependentUpon>
+      <DependentUpon>CocoaGLControl.cs</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Carbon.cs" />
     <Compile Include="NS.cs">
-      <DependentUpon>CarbonGLControl.cs</DependentUpon>
+      <DependentUpon>CocoaGLControl.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

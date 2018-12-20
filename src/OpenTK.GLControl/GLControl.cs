@@ -188,16 +188,18 @@ namespace OpenTK
             }
         }
 
+        private bool _forcedRecreate;
+
         /// <summary>Raises the HandleCreated event.</summary>
         /// <param name="e">Not used.</param>
         protected override void OnHandleCreated(EventArgs e)
         {
-            if (!(_implementation is DummyGLControl))
+            if (!(_implementation is DummyGLControl) || _forcedRecreate)
             { // No need to recreate our DummyGLControl
                 _context?.Dispose();
                 _implementation?.WindowInfo.Dispose();
 
-                if (_designMode)
+                if (_designMode || ParentForm == null)
                 {
                     _implementation = new DummyGLControl();
                     _context = _implementation.CreateContext(_major, _minor, _flags);
@@ -211,11 +213,13 @@ namespace OpenTK
                         _context = _implementation.CreateContext(_major, _minor, _flags);
                         HasValidContext = true;
                     }
-                    catch (GraphicsModeException)
+                    catch (GraphicsModeException ex)
                     {
                         _implementation = new DummyGLControl();
                         _context = _implementation.CreateContext(_major, _minor, _flags);
                         HasValidContext = false;
+                        Console.WriteLine("GraphicsModeException happened! " + ex.Message);
+                        Console.WriteLine(ex.StackTrace);
                     }
                 }
 
@@ -327,12 +331,24 @@ namespace OpenTK
             _context?.Update(Implementation.WindowInfo);
         }
 
+        public void TryRecreate()
+        {
+            _forcedRecreate = true;
+            OnHandleCreated(EventArgs.Empty);
+            _forcedRecreate = false;
+            //Cocoa requires a window to mount GL, so we can't create context until a parent exists.
+        }
+
         /// <summary>
         /// Raises the ParentChanged event.
         /// </summary>
         /// <param name="e">A System.EventArgs that contains the event data.</param>
         protected override void OnParentChanged(EventArgs e)
         {
+            if (_implementation is DummyGLControl && ParentForm != null)
+            {
+                TryRecreate();
+            }
             _context?.Update(Implementation.WindowInfo);
 
             base.OnParentChanged(e);
