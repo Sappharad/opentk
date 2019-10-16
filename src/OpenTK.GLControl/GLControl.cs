@@ -354,6 +354,15 @@ namespace OpenTK
             base.OnParentChanged(e);
         }
 
+        protected override void OnParentVisibleChanged(EventArgs e)
+        {
+            if (_implementation is DummyGLControl && ParentForm != null)
+            {
+                TryRecreate();
+            }
+            base.OnParentVisibleChanged(e);
+        }
+
         /// <summary>
         /// Swaps the front and back buffers, presenting the rendered scene to the screen.
         /// This method will have no effect on a single-buffered <c>GraphicsMode</c>.
